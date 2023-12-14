@@ -1,17 +1,9 @@
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
+import { readFile } from "node:fs/promises";
+import { resolvers } from "./resolvers.js";
 
-const typeDefs = ` 
- type Query {
-    greeting: String
-}
-`;
-
-const resolvers = {
-  Query: {
-    greeting: () => "hello from the graphql server",
-  },
-};
+const typeDefs = await readFile("./server/schema.graphql", "utf-8");
 
 const apolloServer = new ApolloServer({ typeDefs, resolvers });
 
