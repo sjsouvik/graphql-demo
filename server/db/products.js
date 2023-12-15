@@ -1,12 +1,17 @@
+import { products, categories } from "./mockData.js";
+
 export const getProducts = () => {
-  return new Promise((resolve, _) =>
-    resolve([
-      {
-        id: "1",
-        title: "product title",
-        description: "product description",
-        createdAt: "2023-12-14T11:05:10:100Z",
-      },
-    ])
-  );
+  return new Promise(products);
+};
+
+export const getCategory = (categoryId) => {
+  return categories.find((category) => category.id === categoryId);
+};
+
+export const getProductsByCategory = (categoryId) => {
+  return products.filter((product) => product.categoryId === categoryId);
+};
+
+export const getProduct = (productId) => {
+  return products.find((product) => product.id === productId);
 };

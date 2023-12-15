@@ -1,7 +1,9 @@
 # the `!` is used to define the non-nullable property. `Product` is a custom type here. We write documentation comments using 3 pair of inverted commas
 
 type Query {
+  product(id: ID): Product
   products: [Product!]
+  category(id: ID): Category
 }
 
 """
@@ -18,4 +20,12 @@ type Product {
   """
   description: String!
   date: String
+  category: Category!
+}
+
+type Category {
+  id: ID!
+  title: String
+  description: String
+  products: [Product!]
 }
