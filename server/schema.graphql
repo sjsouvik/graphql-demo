@@ -6,6 +6,12 @@ type Query {
   category(id: ID): Category
 }
 
+type Mutation {
+  addProduct(input: AddProductInput): Product
+  updateProduct(input: UpdateProductInput): Product
+  deleteProduct(id: ID): Product
+}
+
 """
 This represents a product on the product listing page
 """
@@ -28,4 +34,15 @@ type Category {
   title: String
   description: String
   products: [Product!]
+}
+
+input AddProductInput {
+  title: String!
+  description: String
+}
+
+input UpdateProductInput {
+  id: ID!
+  title: String
+  description: String
 }
