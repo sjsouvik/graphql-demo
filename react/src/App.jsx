@@ -1,37 +1,16 @@
-import { useEffect, useState } from "react";
-import { GraphQLClient, gql } from "graphql-request";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
-
-const client = new GraphQLClient("http://localhost:9999/");
-
-const query = gql`
-  {
-    products {
-      id
-      title
-      description
-    }
-  }
-`;
+import { Home } from "./pages/Home";
+import { ProductDetails } from "./pages/ProductDetails";
 
 function App() {
-  const [products, setProducts] = useState([]);
-
-  useEffect(() => {
-    const getProducts = async () => {
-      const data = await client.request(query);
-      setProducts(data.products);
-    };
-
-    getProducts();
-  }, []);
-
   return (
-    <ul>
-      {products.map((product) => (
-        <li key={product.id}>{product.title}</li>
-      ))}
-    </ul>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/products/:productId" element={<ProductDetails />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
