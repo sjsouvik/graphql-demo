@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getProductDetails } from "../lib/queries";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 export const ProductDetails = () => {
   const [details, setDetails] = useState(null);
@@ -16,7 +16,13 @@ export const ProductDetails = () => {
 
   return (
     <div>
-      <p>Title: {details.title}</p>
+      <h2>{details.title}</h2>
+      <p>
+        Category:
+        <Link to={`/categories/${details.category.id}`}>
+          {details.category.title}
+        </Link>
+      </p>
       <p>Description: {details.description}</p>
     </div>
   );

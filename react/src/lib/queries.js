@@ -15,7 +15,10 @@ export const getAllProducts = async () => {
     }
   `;
 
-  const { data } = await apolloClient.query({ query });
+  const { data } = await apolloClient.query({
+    query,
+    fetchPolicy: "network-only",
+  });
   return data.products;
 };
 
@@ -38,5 +41,51 @@ export const getProductDetails = async (productId) => {
     query,
     variables: { productId },
   });
+  return data.product;
+};
+
+export const getCategoryDetails = async (categoryId) => {
+  const query = gql`
+    query categoryById($categoryId: ID) {
+      category(id: $categoryId) {
+        id
+        title
+        description
+        products {
+          id
+          title
+        }
+      }
+    }
+  `;
+
+  const { data } = await apolloClient.query({
+    query,
+    variables: { categoryId },
+  });
+
+  return data.category;
+};
+
+export const addNewProduct = async (productDetails) => {
+  const mutation = gql`
+    mutation addNewProduct($input: AddProductInput) {
+      product: addProduct(input: $input) {
+        id
+        title
+        description
+        category {
+          id
+          title
+        }
+      }
+    }
+  `;
+
+  const { data } = await apolloClient.mutate({
+    mutation,
+    variables: { input: productDetails },
+  });
+
   return data.product;
 };

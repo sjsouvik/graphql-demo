@@ -23,7 +23,15 @@ export const resolvers = {
     products: async () => {
       return await getProducts();
     },
-    category: (_root, args) => getCategory(args.id),
+    category: (_root, args) => {
+      const category = getCategory(args.id);
+
+      if (!category) {
+        throw notFoundError(`no product found with id ${args.id}`);
+      }
+
+      return category;
+    },
   },
 
   Mutation: {

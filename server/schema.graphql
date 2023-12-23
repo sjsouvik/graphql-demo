@@ -1,4 +1,4 @@
-# the `!` is used to define the non-nullable property. `Product` is a custom type here. We write documentation comments using 3 pair of inverted commas
+# the `!` is used to define the non-nullable property. `Product` is a custom type here. We write documentation comments using 3 pair of inverted commas("""comment to add documentation""")
 
 type Query {
   product(id: ID): Product
