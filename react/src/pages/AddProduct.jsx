@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { addNewProduct } from "../lib/queries";
+import { useNavigate } from "react-router-dom";
 
 export const AddProduct = () => {
   const [productDetails, setProductDetails] = useState({
@@ -7,10 +8,13 @@ export const AddProduct = () => {
     description: "",
   });
 
+  const navigate = useNavigate();
+
   const addProductHandler = async (e) => {
     e.preventDefault();
     const product = await addNewProduct(productDetails);
     console.log("log-", product);
+    navigate(`/products/${product.id}`);
   };
 
   return (

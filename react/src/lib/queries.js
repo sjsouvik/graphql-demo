@@ -5,6 +5,28 @@ const apolloClient = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
+const productFragment = gql`
+  fragment productFields on Product {
+    id
+    title
+    description
+    category {
+      id
+      title
+    }
+  }
+`;
+
+const getProductByIdQuery = gql`
+  query productById($productId: ID) {
+    product(id: $productId) {
+      ...productFields
+    }
+  }
+
+  ${productFragment}
+`;
+
 export const getAllProducts = async () => {
   const query = gql`
     query products {
@@ -23,22 +45,8 @@ export const getAllProducts = async () => {
 };
 
 export const getProductDetails = async (productId) => {
-  const query = gql`
-    query productById($productId: ID) {
-      product(id: $productId) {
-        id
-        title
-        description
-        category {
-          id
-          title
-        }
-      }
-    }
-  `;
-
   const { data } = await apolloClient.query({
-    query,
+    query: getProductByIdQuery,
     variables: { productId },
   });
   return data.product;
@@ -71,20 +79,26 @@ export const addNewProduct = async (productDetails) => {
   const mutation = gql`
     mutation addNewProduct($input: AddProductInput) {
       product: addProduct(input: $input) {
-        id
-        title
-        description
-        category {
-          id
-          title
-        }
+        ...productFields
       }
     }
+
+    ${productFragment}
   `;
 
   const { data } = await apolloClient.mutate({
     mutation,
     variables: { input: productDetails },
+
+    /* update the client side cache with the newly added product details so that the extra network call to fetch the 
+    newly added product details can be avoided after moving to the product details page once the product is added */
+    update: (cache, result) => {
+      cache.writeQuery({
+        query: getProductByIdQuery,
+        data: result.data,
+        variables: { productId: result.data.product.id },
+      });
+    },
   });
 
   return data.product;
