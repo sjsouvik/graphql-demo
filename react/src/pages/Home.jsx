@@ -1,24 +1,29 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getAllProducts } from "../lib/queries";
-import { Layout } from "../components/Layout";
+import { getAllProductsQuery } from "../lib/queries";
+import { useQuery } from "@apollo/client";
 
 export const Home = () => {
-  const [products, setProducts] = useState([]);
+  const { data, loading, error } = useQuery(getAllProductsQuery, {
+    fetchPolicy: "network-only",
+  });
 
-  useEffect(() => {
-    getAllProducts().then(setProducts);
-  }, []);
+  if (loading) {
+    return <p>Loading data...</p>;
+  }
+
+  if (error) {
+    return <p>Got some error...</p>;
+  }
+
+  const { products } = data;
 
   return (
-    <>
-      <ul>
-        {products.map((product) => (
-          <li key={product.id}>
-            <Link to={`/products/${product.id}`}>{product.title}</Link>
-          </li>
-        ))}
-      </ul>
-    </>
+    <ul>
+      {products.map((product) => (
+        <li key={product.id}>
+          <Link to={`/products/${product.id}`}>{product.title}</Link>
+        </li>
+      ))}
+    </ul>
   );
 };

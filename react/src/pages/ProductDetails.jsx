@@ -1,18 +1,23 @@
-import { useEffect, useState } from "react";
-import { getProductDetails } from "../lib/queries";
+import { getProductByIdQuery } from "../lib/queries";
 import { Link, useParams } from "react-router-dom";
+import { useQuery } from "@apollo/client";
 
 export const ProductDetails = () => {
-  const [details, setDetails] = useState(null);
   const { productId } = useParams();
 
-  useEffect(() => {
-    getProductDetails(productId).then(setDetails);
-  }, [productId]);
+  const { data, loading, error } = useQuery(getProductByIdQuery, {
+    variables: { productId },
+  });
 
-  if (details === null) {
-    return null;
+  if (loading) {
+    return <p>Loading data...</p>;
   }
+
+  if (error) {
+    return <p>Got some error...</p>;
+  }
+
+  const { product: details } = data;
 
   return (
     <div>

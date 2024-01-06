@@ -1,6 +1,6 @@
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 
-const apolloClient = new ApolloClient({
+export const apolloClient = new ApolloClient({
   uri: "http://localhost:9999/",
   cache: new InMemoryCache(),
 });
@@ -17,7 +17,16 @@ const productFragment = gql`
   }
 `;
 
-const getProductByIdQuery = gql`
+export const getAllProductsQuery = gql`
+  query products {
+    products {
+      id
+      title
+    }
+  }
+`;
+
+export const getProductByIdQuery = gql`
   query productById($productId: ID) {
     product(id: $productId) {
       ...productFields
@@ -27,18 +36,11 @@ const getProductByIdQuery = gql`
   ${productFragment}
 `;
 
+/* framework agnostic way to query graphql api, otherwise for ReactJS projects, 
+we can use `useQuery()` hook provided by apollo client to fetch data */
 export const getAllProducts = async () => {
-  const query = gql`
-    query products {
-      products {
-        id
-        title
-      }
-    }
-  `;
-
   const { data } = await apolloClient.query({
-    query,
+    query: getAllProductsQuery,
     fetchPolicy: "network-only",
   });
   return data.products;
