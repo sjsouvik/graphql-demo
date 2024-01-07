@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { addNewProduct } from "../lib/queries";
+import { addNewProductMutation, getProductByIdQuery } from "../lib/queries";
 import { useNavigate } from "react-router-dom";
+import { useMutation } from "@apollo/client";
 
 export const AddProduct = () => {
   const [productDetails, setProductDetails] = useState({
@@ -8,12 +9,24 @@ export const AddProduct = () => {
     description: "",
   });
 
+  const [mutate, { loading }] = useMutation(addNewProductMutation);
+
   const navigate = useNavigate();
 
   const addProductHandler = async (e) => {
     e.preventDefault();
-    const product = await addNewProduct(productDetails);
-    console.log("log-", product);
+    const {
+      data: { product },
+    } = await mutate({
+      variables: { input: productDetails },
+      update: (cache, result) => {
+        cache.writeQuery({
+          query: getProductByIdQuery,
+          data: result.data,
+          variables: { productId: result.data.product.id },
+        });
+      },
+    });
     navigate(`/products/${product.id}`);
   };
 
@@ -54,7 +67,7 @@ export const AddProduct = () => {
             }
           />
         </div>
-        <button>Submit</button>
+        <button disabled={loading}>{loading ? "Adding..." : "Submit"}</button>
       </form>
     </div>
   );

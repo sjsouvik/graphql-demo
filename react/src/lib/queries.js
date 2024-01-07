@@ -36,6 +36,30 @@ export const getProductByIdQuery = gql`
   ${productFragment}
 `;
 
+export const getCategoryByIdQuery = gql`
+  query categoryById($categoryId: ID) {
+    category(id: $categoryId) {
+      id
+      title
+      description
+      products {
+        id
+        title
+      }
+    }
+  }
+`;
+
+export const addNewProductMutation = gql`
+  mutation addNewProduct($input: AddProductInput) {
+    product: addProduct(input: $input) {
+      ...productFields
+    }
+  }
+
+  ${productFragment}
+`;
+
 /* framework agnostic way to query graphql api, otherwise for ReactJS projects, 
 we can use `useQuery()` hook provided by apollo client to fetch data */
 export const getAllProducts = async () => {
@@ -55,22 +79,8 @@ export const getProductDetails = async (productId) => {
 };
 
 export const getCategoryDetails = async (categoryId) => {
-  const query = gql`
-    query categoryById($categoryId: ID) {
-      category(id: $categoryId) {
-        id
-        title
-        description
-        products {
-          id
-          title
-        }
-      }
-    }
-  `;
-
   const { data } = await apolloClient.query({
-    query,
+    query: getCategoryByIdQuery,
     variables: { categoryId },
   });
 
@@ -78,18 +88,8 @@ export const getCategoryDetails = async (categoryId) => {
 };
 
 export const addNewProduct = async (productDetails) => {
-  const mutation = gql`
-    mutation addNewProduct($input: AddProductInput) {
-      product: addProduct(input: $input) {
-        ...productFields
-      }
-    }
-
-    ${productFragment}
-  `;
-
   const { data } = await apolloClient.mutate({
-    mutation,
+    mutation: addNewProductMutation,
     variables: { input: productDetails },
 
     /* update the client side cache with the newly added product details so that the extra network call to fetch the 

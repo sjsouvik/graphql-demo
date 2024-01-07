@@ -1,18 +1,23 @@
-import { useEffect, useState } from "react";
-import { getCategoryDetails } from "../lib/queries";
+import { getCategoryByIdQuery } from "../lib/queries";
 import { useParams } from "react-router-dom";
+import { useQuery } from "@apollo/client";
 
 export const Category = () => {
   const { categoryId } = useParams();
-  const [details, setDetails] = useState(null);
 
-  useEffect(() => {
-    getCategoryDetails(categoryId).then(setDetails);
-  }, [categoryId]);
+  const { data, loading, error } = useQuery(getCategoryByIdQuery, {
+    variables: { categoryId },
+  });
 
-  if (details === null) {
-    return null;
+  if (loading) {
+    return <p>Loading data...</p>;
   }
+
+  if (error) {
+    return <p>Got some error...</p>;
+  }
+
+  const { category: details } = data;
 
   return (
     <div>
